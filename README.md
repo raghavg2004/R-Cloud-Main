@@ -1,282 +1,242 @@
-# TeleDrive - Telegram-Based File Manager
+# R-Cloud ☁️ 
 
-A complete web-based File Manager (Google Drive–like) using Telegram as free cloud storage. Upload, manage, preview, and share files directly through your browser, with Telegram acting as the storage backend.
+A powerful Telegram-based cloud storage solution with multi-user support and unlimited storage capacity.
 
-## 🌟 Features
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-✅ **File Upload & Management**
-- Drag-and-drop file upload
-- Multiple file upload support
-- Real-time upload progress tracking
-- File preview (images, videos, documents)
+## ✨ Features
 
-✅ **Storage via Telegram**
-- 100% free cloud storage (up to 2GB per file)
-- Files stored in a private Telegram channel
-- Secure file references using Telegram file_id
-- No third-party paid services required
+- 🔐 **Multi-User Authentication** - Secure login system with user-specific data isolation
+- ☁️ **Unlimited Storage** - Uses Telegram as backend (2GB per file, unlimited files)
+- 👥 **User Isolation** - Each user sees only their own files
+- 🎨 **Modern UI** - Clean, responsive design with dark/light themes
+- 📤 **Easy Upload** - Drag & drop or click to upload
+- 🔍 **Search & Filter** - Quickly find your files
+- 👁️ **File Preview** - Preview images and documents in-app
+- 📱 **Responsive** - Works on desktop, tablet, and mobile
+- 🚀 **Fast & Secure** - Serverless architecture on Vercel
 
-✅ **File Organization**
-- Grid and list view modes
-- Filter by file type (images, documents, videos)
-- Search functionality
-- File categories auto-detection
+## 🚀 Live Demo
 
-✅ **File Operations**
-- Download files
-- Delete files
-- Rename files
-- Share files (copy link)
-- Right-click context menu
+**Production**: [https://r-cloud.vercel.app](https://r-cloud.vercel.app)
 
-✅ **User Interface**
-- Clean, modern design (no frameworks - pure CSS)
-- Responsive mobile-friendly layout
-- Real-time storage statistics
-- Toast notifications
-- Dark/Light theme ready
+### Demo Accounts
+- Username: `raghav` / Password: `raghavg2004`
+- Username: `user2` / Password: `password2`
+- Username: `admin` / Password: `admin123`
 
-## 🛠 Tech Stack
+## 📦 Installation
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Telegram Bot API
-- **Storage**: Telegram Channel (free)
-- **No Dependencies**: Pure vanilla - zero npm packages required
+### Prerequisites
+- Node.js 14+
+- Telegram Bot Token ([Get from @BotFather](https://t.me/BotFather))
+- Telegram Channel ID
 
-## 📋 Prerequisites
+### Local Setup
 
-Before starting, you'll need:
+```bash
+# Clone repository
+git clone https://github.com/raghavg2004/R-Cloud.git
+cd R-Cloud
 
-1. **Telegram Account** - [Create one here](https://telegram.org)
-2. **Telegram Bot** - Get one from [@BotFather](https://t.me/BotFather)
-3. **Telegram Channel** - Create a private channel for storage
-4. **Bot Token** - From @BotFather
-5. **Channel ID** - Your private channel's ID
+# Install dependencies
+npm install
 
-## 🚀 Setup Instructions
+# Start local server (optional)
+npm start
 
-### Step 1: Create a Telegram Bot
-
-1. Open Telegram and search for [@BotFather](https://t.me/BotFather)
-2. Send `/start` and then `/newbot`
-3. Follow the instructions to create your bot
-4. Copy the **Bot Token** (looks like: `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
-
-### Step 2: Create a Private Telegram Channel
-
-1. Open Telegram and create a new channel
-2. Make it **private**
-3. Set channel title to "TeleDrive Storage" or similar
-4. Add your bot as an admin to the channel
-
-### Step 3: Get Your Channel ID
-
-1. Forward any message from your channel to [@userinfobot](https://t.me/userinfobot)
-2. Look for the channel ID in the response (format: `-1001234567890`)
-
-### Step 4: Configure TeleDrive
-
-1. Open `index.html` in your web browser
-2. Click the **⚙️ Settings** button (top-right)
-3. Enter:
-   - **Telegram Bot Token**: Your bot token from @BotFather
-   - **Channel ID**: Your private channel's ID
-   - **API Server URL**: Leave empty (uses direct Telegram API)
-4. Click **"Test Connection"** to verify everything works
-5. Click **"Save Settings"**
-
-### Step 5: Start Using TeleDrive
-
-1. Click the upload area or drag files to upload
-2. Files are instantly stored in your Telegram channel
-3. Manage files from the interface
-4. Download, preview, or delete files anytime
-
-## 📁 Project Structure
-
-```
-Filemanager-Telegram/
-├── index.html          # Main HTML structure
-├── styles.css          # Complete styling (no frameworks)
-├── app.js              # Core application logic
-├── server.js           # Optional Node.js backend
-├── README.md           # This file
-└── package.json        # Node.js dependencies (optional)
+# Or open index.html directly in browser
 ```
 
-## 🎯 Usage Guide
+## 🌐 Deploy to Vercel
 
-### Uploading Files
-- **Click** the upload area or drag files directly
-- **Supported formats**: Any file up to 2GB
-- Progress bar shows upload status
-- Files appear instantly in the file list
+### Quick Deploy
 
-### Managing Files
-- **Preview**: Click any file to see preview
-- **Download**: Click download button in preview modal
-- **Delete**: Click delete button to remove file
-- **Rename**: Right-click and select "Rename"
-- **Share**: Right-click and select "Share Link"
+1. **Push to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
 
-### Filtering & Search
-- Use **sidebar** to filter by file type
-- Use **search bar** to find specific files
-- Switch between **grid** and **list** views
+2. **Deploy on Vercel**:
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import `raghavg2004/R-Cloud`
+   - Click "Deploy"
+
+### Or use the deploy script:
+
+**Windows**:
+```bash
+./deploy.bat
+```
+
+**Linux/Mac**:
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+📖 **Detailed deployment guide**: See [DEPLOY.md](DEPLOY.md)
+
+## ⚙️ Configuration
+
+### 1. Setup Telegram Bot
+
+1. Message [@BotFather](https://t.me/BotFather) on Telegram
+2. Create a new bot: `/newbot`
+3. Copy your bot token
+4. Create a private channel
+5. Add your bot as admin to the channel
+6. Get channel ID (use [@userinfobot](https://t.me/userinfobot))
+
+### 2. Configure in App
+
+1. Open the app
+2. Login with your credentials
+3. Click Settings (⚙️)
+4. Enter:
+   - Bot Token
+   - Channel ID
+5. Click "Test Connection"
+6. Save settings
+
+### 3. Add Users
+
+Edit `app.js` and add users to the `USERS` object:
+
+```javascript
+const USERS = {
+    'username': { password: 'password123', email: 'user@example.com' },
+    // Add more users...
+};
+```
+
+## 🏗️ Project Structure
+
+```
+R-Cloud/
+├── api/                    # Vercel serverless functions
+│   ├── health.js          # Health check endpoint
+│   ├── settings.js        # Settings API
+│   ├── files.js           # Files metadata API
+│   └── telegram.js        # Telegram API proxy
+├── data/                   # User data (local only, not deployed)
+│   ├── user1/
+│   └── user2/
+├── index.html             # Main app interface
+├── app.js                 # Frontend logic
+├── styles.css             # Styling
+├── server.js              # Local development server
+├── vercel.json            # Vercel configuration
+├── package.json           # Dependencies
+└── DEPLOY.md              # Deployment guide
+```
+
+## 🔧 How It Works
+
+1. **Authentication**: Users login with username/password
+2. **File Upload**: Files are uploaded to your Telegram channel
+3. **Metadata Storage**: File information stored in browser localStorage
+4. **User Isolation**: Each user's data is separated by username
+5. **Retrieval**: Files fetched from Telegram when needed
+
+## 💾 Storage Details
+
+- **File Storage**: Telegram Channel (unlimited files, 2GB each)
+- **Metadata**: Browser localStorage (per user)
+- **Sessions**: Browser sessionStorage
+- **Max File Size**: 2GB per file (Telegram limit)
+
+## 🔐 Security
+
+⚠️ **Important Security Notes**:
+
+This is a demo/personal project. For production use:
+
+1. ✅ Implement password hashing (bcrypt)
+2. ✅ Use JWT tokens for authentication
+3. ✅ Add rate limiting
+4. ✅ Use environment variables for secrets
+5. ✅ Implement proper database (MongoDB/PostgreSQL)
+6. ✅ Add HTTPS only
+7. ✅ Sanitize user inputs
+
+## 🛠️ Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run local server
+npm start
+
+# Development with auto-reload
+npm run dev
+```
+
+## 📝 API Endpoints
+
+### Health Check
+```
+GET /api/health
+```
 
 ### Settings
-- Click **⚙️** icon to open settings
-- Update bot token or channel ID anytime
-- Test connection before saving
+```
+GET /api/settings?username=user1
+POST /api/settings
+```
 
-## 🔒 Security & Privacy
+### Files
+```
+GET /api/files?username=user1
+POST /api/files
+```
 
-✅ **End-to-End Safe**
-- Files stored in YOUR private Telegram channel
-- Only you have access
-- No data stored on external servers
-- Bot token stored locally (never sent to third parties)
-
-✅ **Privacy Features**
-- Settings stored in browser localStorage
-- No tracking or analytics
-- Open source - review the code
-- Works completely offline (except uploads)
-
-## 📊 Storage Limits
-
-- **Per File**: Up to 2GB (Telegram limit)
-- **Total Storage**: Unlimited (via Telegram channels)
-- **Free**: 100% free - Telegram doesn't charge
-
-## 🐛 Troubleshooting
-
-### "Connection Failed" Error
-- Verify bot token is correct
-- Ensure bot is admin in your private channel
-- Check channel ID format (should start with `-100`)
-- Make channel absolutely private
-
-### Files Not Uploading
-- Check internet connection
-- Verify bot token and channel ID
-- Ensure file size is under 2GB
-- Check browser console for errors
-
-### Preview Not Working
-- Supported formats: JPG, PNG, GIF, MP4, etc.
-- Large files may take time to load
-- Check Telegram channel - message should be there
-
-### Share Link Not Working
-- Copy the generated link manually
-- Share link includes browser localStorage data
-- Recipient needs app configured to access files
-
-## 📈 Advanced Setup (Optional)
-
-### Using a Proxy Server
-
-For better reliability, you can set up a Node.js proxy server:
-
-1. Install Node.js dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Update `server.js` with your bot token
-
-3. Run the server:
-   ```bash
-   node server.js
-   ```
-
-4. In TeleDrive settings, set API Server URL to your server URL
-
-5. The proxy server handles all Telegram API calls
-
-## 🔄 File Sync Across Devices
-
-Since files are stored in Telegram:
-1. Same credentials (bot token + channel ID) on any device
-2. All files automatically accessible
-3. Perfect for cloud backup and sync
-
-## ⚠️ Limitations
-
-- Maximum file size: 2GB (Telegram limit)
-- File history: Limited to what's in channel
-- Offline mode: Download files to access offline
-- Real-time sync: Check for new files manually
-
-## 📱 Mobile Support
-
-TeleDrive works on mobile browsers:
-- iPhone Safari
-- Android Chrome/Firefox
-- Responsive design
-- Touch-friendly interface
+### Telegram Proxy
+```
+POST /api/telegram
+Body: { method, token, data }
+```
 
 ## 🤝 Contributing
 
-Feel free to:
-- Report bugs
-- Suggest features
-- Improve code
-- Optimize performance
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Open Source - Free to use and modify
+## 📄 License
 
-## 🙏 Support
+This project is licensed under the MIT License.
 
-Having issues? Check:
-1. Browser console (F12) for errors
-2. Telegram channel has messages
-3. Bot is admin in channel
-4. Token and channel ID are correct
+## 👤 Author
 
-## 🚀 Future Features
+**Raghav**
+- GitHub: [@raghavg2004](https://github.com/raghavg2004)
+- Repository: [R-Cloud](https://github.com/raghavg2004/R-Cloud)
 
-- Folder organization
-- File tagging and labels
-- Batch operations
-- Advanced filtering
-- Dark mode
-- File versioning
-- Collaborative sharing
-- File encryption
+## 🙏 Acknowledgments
 
-## 📚 API Documentation
+- Telegram Bot API for unlimited storage
+- Vercel for free hosting
+- Open source community
 
-### Telegram Bot API Methods Used
+## 📞 Support
 
-- `sendDocument` - Upload file to channel
-- `getFile` - Get file info and download link
-- `deleteMessage` - Delete file message
-- `getMe` - Verify bot connection
-- `getChat` - Verify channel access
-
-### Local Storage
-
-- `teledriveFiles` - Stores file metadata
-- `botToken` - Telegram bot token
-- `channelId` - Telegram channel ID
-- `apiUrl` - Custom API server URL (optional)
-
-## 🎓 Learning Resources
-
-- [Telegram Bot API Documentation](https://core.telegram.org/bots/api)
-- [Telegram Bot Development Guide](https://core.telegram.org/bots)
-- [@BotFather Guide](https://core.telegram.org/bots#botfather)
-
-## ⭐ Star This Project!
-
-If you find TeleDrive useful, please star this repository on GitHub!
+If you have any questions or need help:
+- Open an issue on GitHub
+- Check the [DEPLOY.md](DEPLOY.md) guide
+- Review the configuration section
 
 ---
 
-**Made with ❤️ for cloud storage lovers everywhere**
+**Made with ❤️ by Raghav**
 
-Last Updated: February 2, 2026
+⭐ Star this repo if you find it useful!
