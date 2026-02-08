@@ -1,0 +1,513 @@
+<!-- 
+    TELEDRIVE - SETUP & CONFIGURATION HELPER
+    
+    This HTML page helps you through the setup process.
+    Save this file and open in browser for interactive setup.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleDrive Setup Wizard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #999;
+            font-size: 0.95rem;
+        }
+
+        .steps {
+            display: none;
+        }
+
+        .steps.active {
+            display: block;
+        }
+
+        .step {
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-content {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .step-content ol, .step-content ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .step-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: #222;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+
+        .code-block:hover::after {
+            content: ' [Click to copy]';
+            opacity: 0.7;
+        }
+
+        .input-group {
+            margin: 1rem 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .progress-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-dot {
+            flex: 1;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+        }
+
+        .progress-dot.active {
+            background: #667eea;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #17a2b8;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+
+        .checklist {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .checklist-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 0.25rem;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checklist-checkbox.checked {
+            background: #667eea;
+            color: white;
+        }
+
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 TeleDrive Setup</h1>
+            <p>5-minute Telegram file manager setup</p>
+        </div>
+
+        <div class="progress-bar" id="progressBar"></div>
+
+        <!-- Step 1: Bot Token -->
+        <div class="steps active" id="step1">
+            <div class="step">
+                <div class="step-title"><span class="step-number">1</span>Get Your Bot Token</div>
+                <div class="step-content">
+                    <p><strong>What you need:</strong> A Telegram bot token from @BotFather</p>
+                    <ol>
+                        <li>Open Telegram</li>
+                        <li>Search for <a href="https://t.me/BotFather" class="link" target="_blank">@BotFather</a></li>
+                        <li>Send <code>/newbot</code></li>
+                        <li>Choose a name (e.g., "TeleDrive")</li>
+                        <li>Choose a username (must be unique, e.g., "teledrive_storage_bot")</li>
+                        <li>Copy the token that appears</li>
+                    </ol>
+                </div>
+                <div class="input-group">
+                    <label>Paste your bot token:</label>
+                    <input type="password" id="botToken" placeholder="123456789:ABCxyz...">
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Create Channel -->
+        <div class="steps" id="step2">
+            <div class="step">
+                <div class="step-title"><span class="step-number">2</span>Create Private Storage Channel</div>
+                <div class="step-content">
+                    <p><strong>What you need:</strong> A private Telegram channel</p>
+                    <ol>
+                        <li>Open Telegram</li>
+                        <li>Go to <strong>Menu</strong> → <strong>New Channel</strong></li>
+                        <li>Enter channel name: "TeleDrive Storage"</li>
+                        <li>Choose <strong>Private Channel</strong></li>
+                        <li>Skip adding members</li>
+                        <li>Create the channel</li>
+                    </ol>
+                    <p style="margin-top: 1rem;"><strong>Important:</strong> The channel MUST be private!</p>
+                </div>
+                <div class="alert info">
+                    Next, we'll add your bot to this channel
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Add Bot to Channel -->
+        <div class="steps" id="step3">
+            <div class="step">
+                <div class="step-title"><span class="step-number">3</span>Add Bot to Channel</div>
+                <div class="step-content">
+                    <p><strong>What you need:</strong> Add your bot as admin to the channel</p>
+                    <ol>
+                        <li>Open your private channel in Telegram</li>
+                        <li>Go to <strong>Info</strong> (or swipe right)</li>
+                        <li>Scroll down and select <strong>Administrators</strong></li>
+                        <li>Tap <strong>Add Administrator</strong></li>
+                        <li>Search for your bot username</li>
+                        <li>Select it and give permissions:
+                            <ul>
+                                <li>✓ Post Messages</li>
+                                <li>✓ Delete Messages</li>
+                            </ul>
+                        </li>
+                        <li>Save changes</li>
+                    </ol>
+                </div>
+                <div class="alert warning">
+                    Your bot MUST be admin to upload files!
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Get Channel ID -->
+        <div class="steps" id="step4">
+            <div class="step">
+                <div class="step-title"><span class="step-number">4</span>Get Your Channel ID</div>
+                <div class="step-content">
+                    <p><strong>What you need:</strong> Your channel's unique ID</p>
+                    <ol>
+                        <li>Open your private channel in Telegram</li>
+                        <li>Forward ANY message from the channel to <a href="https://t.me/userinfobot" class="link" target="_blank">@userinfobot</a></li>
+                        <li>Look for <strong>"Channel ID"</strong> or <strong>"Supergroup ID"</strong></li>
+                        <li>Copy the entire number (starts with -100)</li>
+                    </ol>
+                    <p style="margin-top: 1rem;"><strong>Example format:</strong></p>
+                    <div class="code-block" onclick="copyText(this)">-1001234567890</div>
+                </div>
+                <div class="input-group">
+                    <label>Paste your channel ID:</label>
+                    <input type="text" id="channelId" placeholder="-1001234567890">
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(5)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Configure App -->
+        <div class="steps" id="step5">
+            <div class="step">
+                <div class="step-title"><span class="step-number">5</span>Configure TeleDrive</div>
+                <div class="step-content">
+                    <p><strong>Final step:</strong> Enter your credentials in TeleDrive app</p>
+                    <ol>
+                        <li>Open <code>index.html</code> in your browser</li>
+                        <li>Click <strong>⚙️ Settings</strong> (top-right)</li>
+                        <li>Paste your credentials:
+                            <ul>
+                                <li><strong>Bot Token:</strong> <span id="displayToken" style="color: #667eea; font-weight: 500;">•••••</span></li>
+                                <li><strong>Channel ID:</strong> <span id="displayChannel" style="color: #667eea; font-weight: 500;">•••••</span></li>
+                                <li><strong>API Server URL:</strong> Leave empty</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>"Test Connection"</strong></li>
+                        <li>If it says ✓ Connected, click <strong>"Save Settings"</strong></li>
+                    </ol>
+                </div>
+                <div class="alert success">
+                    That's it! You're all set!
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+                <button class="btn btn-primary" onclick="finish()">Open TeleDrive →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const steps = [1, 2, 3, 4, 5];
+        let currentStep = 1;
+
+        // Initialize progress bar
+        function initProgressBar() {
+            const bar = document.getElementById('progressBar');
+            bar.innerHTML = steps.map((_, i) => 
+                `<div class="progress-dot ${i < 1 ? 'active' : ''}"></div>`
+            ).join('');
+        }
+
+        function goToStep(step) {
+            // Validate current step before moving
+            if (currentStep === 1 && !document.getElementById('botToken').value) {
+                alert('Please enter your bot token');
+                return;
+            }
+            if (currentStep === 4 && !document.getElementById('channelId').value) {
+                alert('Please enter your channel ID');
+                return;
+            }
+
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+
+            // Show new step
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            // Update progress bar
+            updateProgressBar();
+
+            // Update display
+            updateDisplay();
+
+            // Scroll to top
+            document.querySelector('.container').scrollTop = 0;
+        }
+
+        function updateProgressBar() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, i) => {
+                if (i < currentStep) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function updateDisplay() {
+            const botToken = document.getElementById('botToken').value;
+            const channelId = document.getElementById('channelId').value;
+
+            document.getElementById('displayToken').textContent = 
+                botToken ? botToken.substring(0, 10) + '...' : '•••••';
+            document.getElementById('displayChannel').textContent = 
+                channelId || '•••••';
+        }
+
+        function copyText(element) {
+            const text = element.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                element.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    element.textContent = text;
+                }, 2000);
+            });
+        }
+
+        function finish() {
+            const botToken = document.getElementById('botToken').value;
+            const channelId = document.getElementById('channelId').value;
+
+            if (!botToken || !channelId) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('botToken', botToken);
+            localStorage.setItem('channelId', channelId);
+
+            // Redirect to main app
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        initProgressBar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Storage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 7v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 7l9 5 9-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>TDrive</span>
+            </div>
+            <div class="header-center">
+                <div class="storage-stats header-storage">
+                    <!--<div class="storage-bar">
+                        <div class="storage-used" id="storageUsed"></div>
+                    </div>-->
+                    <p><span id="usedSpace">0</span> MB / <span id="totalSpace">Free</span></p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="user-info">
+                    <span id="currentUser" style="margin-right: 1rem; font-weight: 500;">👤 User</span>
+                    <button class="btn-logout" id="logoutBtn" title="Logout">🚪 Logout</button>
+                </div>
+                <button class="btn-settings" id="settingsBtn" title="Settings">⚙️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Quick Access</h3>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item active" data-view="all">
+                        <span class="icon">📁</span>
+                        <span>All Files</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="media">
+                        <span class="icon">🎬</span>
+                        <span>Photos & Videos</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="documents">
+                        <span class="icon">📄</span>
+                        <span>Documents</span>
+                    </a>
+                    <!--<a href="#" class="nav-item" data-view="trash">
+                        <span class="icon">🗑️</span>
+                        <span>Trash</span>
+                    </a>-->
+                </nav>
+            </div>
+            <div class="sidebar-section">
+                <h3>Upload</h3>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="17 8 12 3 7 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="12" y1="3" x2="12" y2="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p><strong>Click to upload</strong></p>
+                        <small>Drag & drop supported</small>
+                    </div>
+                    <input type="file" id="fileInput" multiple hidden>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Files View -->
+            <section class="files-section">
+                <div class="files-header">
+                    <h2 id="sectionTitle">All Files</h2>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" title="Grid View">⊞</button>
+                        <button class="view-btn" data-view="list" title="List View">≡</button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search files..." autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
+                    <!--<button id="filterBtn" class="btn-filter">Filter</button>-->
+                </div>
+
+                <!-- Files Grid/List -->
+                <div class="files-container" id="filesContainer">
+                    <!-- Files will be dynamically added here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📦</div>
+                    <p>No files yet. Start uploading to see them here!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>Theme:</label>
+                    <div class="theme-selector">
+                        <button class="theme-btn" data-theme="system" title="System theme">🖥️ System</button>
+                        <button class="theme-btn" data-theme="light" title="Light theme">☀️ Light</button>
+                        <button class="theme-btn" data-theme="dark" title="Dark theme">🌙 Dark</button>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label for="botToken">Telegram Bot Token:</label>
+                    <input type="password" id="botToken" name="telegram-bot-token" autocomplete="off" placeholder="Enter your bot token">
+                    <small>Get it from BotFather on Telegram</small>
+                </div>
+                <div class="setting-group">
+                    <label for="channelId">Channel ID:</label>
+                    <input type="text" id="channelId" name="telegram-channel-id" autocomplete="off" placeholder="Enter channel ID (e.g., -1001234567890)">
+                    <small>Make your bot admin in the channel</small>
+                </div>
+                <div class="setting-group">
+                    <label for="apiUrl">API Server URL:</label>
+                    <input type="text" id="apiUrl" name="api-server-url" autocomplete="off" placeholder="Optional: Your API server URL">
+                    <small>Leave empty to use direct Telegram API</small>
+                </div>
+                <div class="setting-group">
+                    <button id="testConnection" class="btn btn-primary">Test Connection</button>
+                </div>
+                <div id="connectionStatus" class="connection-status"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+                <button id="cancelSettings" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content modal-preview">
+            <div class="modal-header">
+                <h2 id="previewTitle">File Preview</h2>
+                <button class="close-btn" id="closePreview">&times;</button>
+            </div>
+            <div class="modal-body preview-body">
+                <div id="previewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="downloadFile" class="btn btn-primary">Download</button>
+                <button id="deleteFile" class="btn btn-danger">Delete</button>
+                <button id="closePreviewBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <a href="#" class="context-item" data-action="preview">👁️ Preview</a>
+        <a href="#" class="context-item" data-action="download">⬇️ Download</a>
+        <a href="#" class="context-item" data-action="share">🔗 Share Link</a>
+        <a href="#" class="context-item" data-action="rename">✏️ Rename</a>
+        <a href="#" class="context-item" data-action="delete">🗑️ Delete</a>
+    </div>
+
+    <!-- Upload Progress -->
+    <div class="upload-progress" id="uploadProgress" style="display: none;">
+        <div class="progress-content">
+            <p id="uploadFileName"></p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="uploadStatus">Uploading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal" style="display: flex;">
+        <div class="modal-content modal-login">
+            <div class="modal-login-header">
+                <h1>TDrive 🔐</h1>
+                <p>Secure Cloud Storage</p>
+            </div>
+            <div class="modal-body modal-login-body">
+                <form id="loginForm">
+                    <div class="login-group">
+                        <label for="loginUsername">Username:</label>
+                        <input type="text" id="loginUsername" required placeholder="Enter your username" autofocus>
+                    </div>
+                    <div class="login-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
+                    </div>
+                    <div id="loginError" class="login-error" style="display: none;"></div>
+                    <button type="submit" class="btn btn-login">Login</button>
+                </form>
+                <!--<div class="login-demo">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <ul>
+                        <li>
+                            <code>user1</code> / <code>password1</code>
+                        </li>
+                        <li>
+                            <code>user2</code> / <code>password2</code>
+                        </li>
+                        <li>
+                            <code>admin</code> / <code>admin123</code>
+                        </li>
+                    </ul>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
