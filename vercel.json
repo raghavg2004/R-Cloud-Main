@@ -3,13 +3,6 @@
   "public": true,
   "buildCommand": "npm run build || true",
   "outputDirectory": "./",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x",
-      "memory": 512,
-      "maxDuration": 30
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
