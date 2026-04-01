@@ -45,9 +45,6 @@ coverage/
 *.pem
 private/
 
-# User Data
-data/
-
 # Temp files
 temp/
 tmp/

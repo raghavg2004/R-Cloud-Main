@@ -39,6 +39,12 @@ if (!fs.existsSync(DATA_DIR)) {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
+
+// Serve the main UI at root so the app runs directly via npm run dev
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // File upload middleware (50MB max)
 const upload = multer({
@@ -536,10 +542,14 @@ app.post('/api/get-chat', async (req, res) => {
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'Endpoint not found'
-    });
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({
+            success: false,
+            error: 'Endpoint not found'
+        });
+    }
+
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Error handler

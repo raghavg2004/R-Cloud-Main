@@ -10,12 +10,18 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <!--<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M3 7v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M3 7l9 5 9-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>TDrive</span>
+                </svg>-->
+                    <img src="rcloud.png" width="24" height="24" alt="R Cloud logo">
+                <span>R Cloud</span>
             </div>
             <div class="header-center">
                 <div class="storage-stats header-storage">
@@ -37,8 +43,11 @@
 
     <!-- Main Container -->
     <div class="main-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-section">
                 <h3>Quick Access</h3>
                 <nav class="nav-menu">
@@ -60,6 +69,7 @@
                     </a>-->
                 </nav>
             </div>
+            <br>
             <div class="sidebar-section">
                 <h3>Upload</h3>
                 <div class="upload-area" id="uploadArea">
@@ -197,7 +207,7 @@
     <div class="modal" id="loginModal" style="display: flex;">
         <div class="modal-content modal-login">
             <div class="modal-login-header">
-                <h1>TDrive 🔐</h1>
+                <h1>R Cloud 🔐</h1>
                 <p>Secure Cloud Storage</p>
             </div>
             <div class="modal-body modal-login-body">

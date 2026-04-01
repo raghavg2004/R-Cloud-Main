@@ -8,7 +8,6 @@
 
 const USERS = {
     'raghav': { password: 'raghavg1212', email: 'user1@example.com' },
-    'user2': { password: 'password2', email: 'user2@example.com' },
     'admin': { password: 'admin123', email: 'admin@example.com' }
 };
 
@@ -137,10 +136,7 @@ let appState = {
 };
 
 // Server configuration
-// Auto-detect server URL: use Vercel production URL or localhost for development
-const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000'
-    : window.location.origin; // Use same origin for Vercel deployment
+const SERVER_URL = 'http://localhost:3000';
 let serverAvailable = false;
 
 // =====================================================
@@ -152,11 +148,18 @@ let serverAvailable = false;
  */
 async function isServerAvailable() {
     try {
-        const response = await fetch(`${SERVER_URL}/health`, { method: 'GET' });
-        return response.ok;
-    } catch {
-        return false;
+        const response = await fetch(`${SERVER_URL}/health`, { 
+            method: 'GET',
+            cache: 'no-cache'
+        });
+        if (response.ok) {
+            console.log('[SERVER CHECK] ✅ Server is available');
+            return true;
+        }
+    } catch (error) {
+        console.warn('[SERVER CHECK] ⚠️ Server not available:', error.message);
     }
+    return false;
 }
 
 /**
@@ -165,9 +168,13 @@ async function isServerAvailable() {
 async function loadSettingsFromServer() {
     try {
         const response = await fetch(`${SERVER_URL}/api/settings?username=${currentUser}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         const result = await response.json();
         
         if (result.success && result.data) {
+            console.log(`[${currentUser}] ⚙️ Settings loaded from server`);
             appState.botToken = result.data.botToken || appState.botToken;
             appState.channelId = result.data.channelId || appState.channelId;
             appState.apiUrl = result.data.apiUrl || appState.apiUrl;
@@ -179,7 +186,7 @@ async function loadSettingsFromServer() {
             return true;
         }
     } catch (error) {
-        console.warn('Server not available, using localStorage fallback:', error);
+        console.warn(`[${currentUser}] ⚠️ Failed to load settings from server:`, error.message);
     }
     return false;
 }
@@ -195,13 +202,17 @@ async function saveSettingsToServer(settings) {
             body: JSON.stringify({ username: currentUser, ...settings })
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const result = await response.json();
         if (result.success) {
-            console.log('Settings saved to server for user:', currentUser);
+            console.log(`[${currentUser}] ✅ Settings saved to server`);
             return true;
         }
     } catch (error) {
-        console.warn('Failed to save settings to server:', error);
+        console.warn(`[${currentUser}] ⚠️ Failed to save settings to server:`, error.message);
     }
     return false;
 }
@@ -212,14 +223,18 @@ async function saveSettingsToServer(settings) {
 async function loadFilesFromServer() {
     try {
         const response = await fetch(`${SERVER_URL}/api/files?username=${currentUser}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         const result = await response.json();
         
         if (result.success && Array.isArray(result.data)) {
             appState.files = result.data;
+            console.log(`[${currentUser}] 📂 Loaded ${result.data.length} files from server`);
             return true;
         }
     } catch (error) {
-        console.warn('Failed to load files from server:', error);
+        console.warn(`[${currentUser}] ⚠️ Failed to load files from server:`, error.message);
     }
     return false;
 }
@@ -235,13 +250,17 @@ async function saveFilesToServer(files) {
             body: JSON.stringify({ username: currentUser, files })
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const result = await response.json();
         if (result.success) {
-            console.log('Files saved to server for user:', currentUser);
+            console.log(`[${currentUser}] ✅ Saved ${files.length} files to server`);
             return true;
         }
     } catch (error) {
-        console.warn('Failed to save files to server:', error);
+        console.warn(`[${currentUser}] ⚠️ Failed to save files to server:`, error.message);
     }
     return false;
 }
@@ -412,11 +431,13 @@ function setTheme(theme) {
     appState.theme = theme;
     applyTheme(theme);
     
-    // Save to server if available, otherwise to localStorage
-    if (appState.useServerStorage) {
+    // Always save to server first (it's the source of truth)
+    if (serverAvailable) {
         saveSettingsToServer({ theme });
     } else {
+        // Only fall back to localStorage if server isn't available
         localStorage.setItem(getUserDataKey('theme'), theme);
+        console.warn(`[${currentUser}] ⚠️ Theme saved locally only - won't sync to other devices`);
     }
 }
 
@@ -701,36 +722,67 @@ async function renameFile(fileId, newName) {
 /**
  * Save files to storage (server or localStorage)
  */
+/**
+ * Save files to storage - always tries server first, NEVER falls back to localStorage for files
+ */
 async function saveFilesToLocalStorage() {
-    console.log(`[${currentUser}] Saving ${appState.files.length} files to storage, serverAvailable:`, serverAvailable);
-    if (serverAvailable) {
+    console.log(`[${currentUser}] 💾 Saving ${appState.files.length} files...`);
+    
+    // Always try to save to server
+    try {
         const saved = await saveFilesToServer(appState.files);
-        console.log(`[${currentUser}] Server save result:`, saved);
-    } else {
-        const key = getUserDataKey('teledriveFiles');
-        localStorage.setItem(key, JSON.stringify(appState.files));
-        console.log(`[${currentUser}] Saved ${appState.files.length} files to localStorage with key:`, key);
+        if (saved) {
+            console.log(`[${currentUser}] ✅ Files saved to server`);
+            return;
+        }
+    } catch (error) {
+        console.error(`[${currentUser}] ❌ Failed to save to server:`, error);
     }
+    
+    // Fallback: warn user that data can't sync across devices
+    console.warn(`[${currentUser}] ⚠️ Could not save to server! Data will NOT sync to other devices.`);
 }
 
 /**
- * Load files from storage (server or localStorage)
+ * Load files from storage - always tries server first
  */
 async function loadFilesFromLocalStorage() {
-    if (serverAvailable) {
-        console.log(`[${currentUser}] Loading files from server...`);
-        await loadFilesFromServer();
-    } else {
-        const key = getUserDataKey('teledriveFiles');
-        console.log(`[${currentUser}] Loading files from localStorage with key: ${key}`);
-        const saved = localStorage.getItem(key);
-        if (saved) {
+    console.log(`[${currentUser}] 📂 Loading files...`);
+    
+    // Always try server first
+    try {
+        const loaded = await loadFilesFromServer();
+        if (loaded && appState.files.length > 0) {
+            console.log(`[${currentUser}] ✅ Loaded ${appState.files.length} files from server`);
+            return;
+        } else if (loaded) {
+            console.log(`[${currentUser}] ✅ Server has no files (starting fresh)`);
+            appState.files = [];
+            return;
+        }
+    } catch (error) {
+        console.error(`[${currentUser}] ⚠️ Failed to load from server:`, error);
+    }
+    
+    // Fallback: check localStorage for old data (but inform user)
+    const key = getUserDataKey('teledriveFiles');
+    const saved = localStorage.getItem(key);
+    if (saved) {
+        try {
             appState.files = JSON.parse(saved);
-            console.log(`[${currentUser}] Loaded ${appState.files.length} files from localStorage`);
-        } else {
-            console.log(`[${currentUser}] No files found in localStorage`);
+            console.warn(`[${currentUser}] ⚠️ Loaded files from browser storage (old device data - NOT synced). These won't sync to other devices.`);
+            // Try to push this to server
+            const synced = await saveFilesToServer(appState.files);
+            if (synced) {
+                console.log(`[${currentUser}] ✅ Local data synced to server for future devices`);
+            }
+        } catch (parseError) {
+            console.error(`[${currentUser}] Error parsing localStorage:`, parseError);
             appState.files = [];
         }
+    } else {
+        console.log(`[${currentUser}] 📭 No files found - starting fresh`);
+        appState.files = [];
     }
 }
 
@@ -1257,6 +1309,8 @@ function switchView(view) {
  * Initialize the main application (called after successful login)
  */
 async function initializeApp() {
+    console.log(`\n🚀 Initializing app for user: ${currentUser}`);
+    
     // Clear previous user's data
     appState.files = [];
     appState.currentView = 'all';
@@ -1269,15 +1323,16 @@ async function initializeApp() {
     serverAvailable = await isServerAvailable();
     
     if (serverAvailable) {
-        console.log('Server storage available - loading settings from server for user:', currentUser);
-        const loaded = await loadSettingsFromServer();
+        console.log(`✅ Server storage available for user: ${currentUser}`);
         appState.useServerStorage = true;
+        const loaded = await loadSettingsFromServer();
         if (!loaded) {
-            // Still use server for files/settings if available
+            // Fall back to defaults, but still use server for saving
             initializeLocalStorageFallback();
         }
     } else {
-        console.log('Server not available - using localStorage fallback for user:', currentUser);
+        console.warn(`⚠️ Server NOT available for user: ${currentUser} - using localStorage (won't sync across devices)`);
+        appState.useServerStorage = false;
         initializeLocalStorageFallback();
     }
 
@@ -1295,6 +1350,18 @@ async function initializeApp() {
 
     // Load files from storage for this user
     await loadFilesFromLocalStorage();
+
+    // Set up periodic sync to server (every 10 seconds)
+    setInterval(async () => {
+        if (serverAvailable && appState.files.length > 0) {
+            try {
+                // Silently sync in background
+                await saveFilesToServer(appState.files);
+            } catch (error) {
+                console.debug('[BACKGROUND SYNC] Failed:', error.message);
+            }
+        }
+    }, 10000);
 
     // Upload area
     const uploadArea = document.getElementById('uploadArea');
@@ -1451,6 +1518,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Mobile menu toggle handler
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    if (mobileMenuToggle && sidebar && sidebarOverlay) {
+        mobileMenuToggle.addEventListener('click', () => {
+            const isActive = mobileMenuToggle.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            
+            // Prevent body scroll when sidebar is open on mobile
+            if (isActive) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close sidebar when clicking overlay
+        sidebarOverlay.addEventListener('click', () => {
+            mobileMenuToggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // Close sidebar when clicking a nav item on mobile
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    mobileMenuToggle.classList.remove('active');
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        
+        // Handle window resize - close menu if resizing to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                mobileMenuToggle.classList.remove('active');
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
     }
 });
 
