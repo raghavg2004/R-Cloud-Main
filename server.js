@@ -24,13 +24,23 @@ const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN || '8582665455:AAE8GProeUEPhAPxzaix388lh8PeUrTSXr4';
 const TELEGRAM_API = 'https://api.telegram.org';
 
-// Data storage directory
+// Detect if running on Vercel (serverless environment)
+const IS_VERCEL = !!process.env.VERCEL;
+console.log(`[INIT] Running on Vercel: ${IS_VERCEL}`);
+
+// In-memory storage for Vercel (ephemeral filesystem)
+const IN_MEMORY_STORAGE = {
+    settings: {},
+    files: {}
+};
+
+// Data storage directory (for local development only)
 const DATA_DIR = path.join(__dirname, 'data');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 const FILES_FILE = path.join(DATA_DIR, 'files.json');
 
-// Create data directory if it doesn't exist
-if (!fs.existsSync(DATA_DIR)) {
+// Create data directory if it doesn't exist (local only)
+if (!IS_VERCEL && !fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
     console.log(`Created data directory: ${DATA_DIR}`);
 }
@@ -54,7 +64,7 @@ const upload = multer({
     }
 });
 
-// Helper function to get user-specific file path
+// Helper function to get user-specific file path (local only)
 function getUserDataFile(filename, username) {
     const userDir = path.join(DATA_DIR, username);
     if (!fs.existsSync(userDir)) {
@@ -63,9 +73,24 @@ function getUserDataFile(filename, username) {
     return path.join(userDir, filename);
 }
 
-// Helper function to read settings from file
+// Helper function to read settings (Vercel or local)
 function readSettings(username = 'default') {
     try {
+        // Use in-memory storage on Vercel
+        if (IS_VERCEL) {
+            if (!IN_MEMORY_STORAGE.settings[username]) {
+                IN_MEMORY_STORAGE.settings[username] = {
+                    botToken: '8582665455:AAE8GProeUEPhAPxzaix388lh8PeUrTSXr4',
+                    channelId: '-1003772832057',
+                    apiUrl: '',
+                    viewMode: 'grid',
+                    theme: 'system'
+                };
+            }
+            return IN_MEMORY_STORAGE.settings[username];
+        }
+        
+        // Use file-based storage locally
         const settingsFile = getUserDataFile('settings.json', username);
         if (fs.existsSync(settingsFile)) {
             const data = fs.readFileSync(settingsFile, 'utf8');
@@ -91,9 +116,17 @@ function readSettings(username = 'default') {
     }
 }
 
-// Helper function to save settings to file
+// Helper function to save settings (Vercel or local)
 function saveSettings(settings, username = 'default') {
     try {
+        // Use in-memory storage on Vercel
+        if (IS_VERCEL) {
+            IN_MEMORY_STORAGE.settings[username] = settings;
+            console.log(`[SERVER] ✅ Saved settings for user "${username}" (in-memory on Vercel)`);
+            return true;
+        }
+        
+        // Use file-based storage locally
         const settingsFile = getUserDataFile('settings.json', username);
         fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2), 'utf8');
         return true;
@@ -103,9 +136,20 @@ function saveSettings(settings, username = 'default') {
     }
 }
 
-// Helper function to read files data from file
+// Helper function to read files data (Vercel or local)
 function readFilesData(username = 'default') {
     try {
+        // Use in-memory storage on Vercel
+        if (IS_VERCEL) {
+            if (!IN_MEMORY_STORAGE.files[username]) {
+                IN_MEMORY_STORAGE.files[username] = [];
+            }
+            const count = IN_MEMORY_STORAGE.files[username].length;
+            console.log(`[SERVER] ✅ Found ${count} files for user "${username}" (in-memory on Vercel)`);
+            return IN_MEMORY_STORAGE.files[username];
+        }
+        
+        // Use file-based storage locally
         const filesFile = getUserDataFile('files.json', username);
         console.log(`[SERVER] Reading files for user "${username}" from: ${filesFile}`);
         if (fs.existsSync(filesFile)) {
@@ -122,9 +166,17 @@ function readFilesData(username = 'default') {
     }
 }
 
-// Helper function to save files data to file
+// Helper function to save files data (Vercel or local)
 function saveFilesData(filesData, username = 'default') {
     try {
+        // Use in-memory storage on Vercel
+        if (IS_VERCEL) {
+            IN_MEMORY_STORAGE.files[username] = filesData;
+            console.log(`[SERVER] ✅ Saved ${filesData.length} files for user "${username}" (in-memory on Vercel)`);
+            return true;
+        }
+        
+        // Use file-based storage locally
         const filesFile = getUserDataFile('files.json', username);
         console.log(`[SERVER] Saving ${filesData.length} files for user "${username}" to: ${filesFile}`);
         fs.writeFileSync(filesFile, JSON.stringify(filesData, null, 2), 'utf8');

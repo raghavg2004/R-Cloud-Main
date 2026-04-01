@@ -754,10 +754,12 @@ async function loadFilesFromLocalStorage() {
         const loaded = await loadFilesFromServer();
         if (loaded && appState.files.length > 0) {
             console.log(`[${currentUser}] ✅ Loaded ${appState.files.length} files from server`);
+            renderFiles();
             return;
         } else if (loaded) {
             console.log(`[${currentUser}] ✅ Server has no files (starting fresh)`);
             appState.files = [];
+            renderFiles();
             return;
         }
     } catch (error) {
@@ -776,13 +778,16 @@ async function loadFilesFromLocalStorage() {
             if (synced) {
                 console.log(`[${currentUser}] ✅ Local data synced to server for future devices`);
             }
+            renderFiles();
         } catch (parseError) {
             console.error(`[${currentUser}] Error parsing localStorage:`, parseError);
             appState.files = [];
+            renderFiles();
         }
     } else {
         console.log(`[${currentUser}] 📭 No files found - starting fresh`);
         appState.files = [];
+        renderFiles();
     }
 }
 
@@ -1388,7 +1393,7 @@ async function initializeApp() {
                     appState.files = result.data;
                     
                     // Re-render UI to show new files
-                    renderFiles(appState.files);
+                    renderFiles();
                     
                     // Show notification if files were added or deleted
                     if (newFileCount > oldFileCount) {
