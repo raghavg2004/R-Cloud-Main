@@ -136,7 +136,7 @@ let appState = {
 };
 
 // Server configuration
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = window.location.origin;
 let serverAvailable = false;
 
 // =====================================================
@@ -148,7 +148,7 @@ let serverAvailable = false;
  */
 async function isServerAvailable() {
     try {
-        const response = await fetch(`${SERVER_URL}/health`, { 
+        const response = await fetch(`${SERVER_URL}/api/health`, { 
             method: 'GET',
             cache: 'no-cache'
         });

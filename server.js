@@ -315,6 +315,10 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', message: 'TeleDrive server is running' });
 });
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'TeleDrive server is running' });
+});
+
 /**
  * Test connection to Telegram
  * POST /api/test-connection
@@ -561,27 +565,29 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`TeleDrive Backend Server`);
-    console.log(`====================================`);
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Bot Token: ${BOT_TOKEN.substring(0, 10)}...`);
-    console.log(`Data Directory: ${DATA_DIR}`);
-    console.log(`====================================`);
-    console.log(`Data Storage Endpoints:`);
-    console.log(`  GET  /api/settings     - Get all settings`);
-    console.log(`  POST /api/settings     - Save settings`);
-    console.log(`  GET  /api/files        - Get all files data`);
-    console.log(`  POST /api/files        - Save files data`);
-    console.log(`Telegram API Endpoints:`);
-    console.log(`  GET  /health           - Health check`);
-    console.log(`  POST /api/test-connection`);
-    console.log(`  POST /api/upload`);
-    console.log(`  POST /api/get-file`);
-    console.log(`  POST /api/delete`);
-    console.log(`  POST /api/get-history`);
-    console.log(`  POST /api/get-chat`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`TeleDrive Backend Server`);
+        console.log(`====================================`);
+        console.log(`Server running on http://localhost:${PORT}`);
+        console.log(`Bot Token: ${BOT_TOKEN.substring(0, 10)}...`);
+        console.log(`Data Directory: ${DATA_DIR}`);
+        console.log(`====================================`);
+        console.log(`Data Storage Endpoints:`);
+        console.log(`  GET  /api/settings     - Get all settings`);
+        console.log(`  POST /api/settings     - Save settings`);
+        console.log(`  GET  /api/files        - Get all files data`);
+        console.log(`  POST /api/files        - Save files data`);
+        console.log(`Telegram API Endpoints:`);
+        console.log(`  GET  /health           - Health check`);
+        console.log(`  GET  /api/health       - Health check (serverless)`);
+        console.log(`  POST /api/test-connection`);
+        console.log(`  POST /api/upload`);
+        console.log(`  POST /api/get-file`);
+        console.log(`  POST /api/delete`);
+        console.log(`  POST /api/get-history`);
+        console.log(`  POST /api/get-chat`);
+    });
+}
 
 module.exports = app;
