@@ -1363,6 +1363,48 @@ async function initializeApp() {
         }
     }, 10000);
 
+    // Set up periodic polling to load files from server (every 5 seconds)
+    // This ensures changes from other devices are reflected in real-time
+    setInterval(async () => {
+        if (!serverAvailable) return;
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/files?username=${currentUser}`);
+            if (!response.ok) return;
+            
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                // Check if files have changed
+                const oldFileCount = appState.files.length;
+                const newFileCount = result.data.length;
+                const fileCountChanged = oldFileCount !== newFileCount;
+                
+                // Deep comparison: check if files are different
+                const filesChanged = fileCountChanged || 
+                    JSON.stringify(appState.files) !== JSON.stringify(result.data);
+                
+                if (filesChanged) {
+                    console.log(`🔄 [${currentUser}] Files updated on another device. Old: ${oldFileCount}, New: ${newFileCount}`);
+                    appState.files = result.data;
+                    
+                    // Re-render UI to show new files
+                    renderFiles(appState.files);
+                    
+                    // Show notification if files were added or deleted
+                    if (newFileCount > oldFileCount) {
+                        const added = newFileCount - oldFileCount;
+                        showToast(`📤 ${added} file(s) uploaded on another device`, 'info');
+                    } else if (newFileCount < oldFileCount) {
+                        const deleted = oldFileCount - newFileCount;
+                        showToast(`🗑️ ${deleted} file(s) deleted on another device`, 'info');
+                    }
+                }
+            }
+        } catch (error) {
+            console.debug('[POLLING] Failed to fetch updates:', error.message);
+        }
+    }, 5000); // Poll every 5 seconds for real-time sync
+
     // Upload area
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
